@@ -649,15 +649,8 @@ def titler(p):
     """ title() replacement
         Python's title() fails with Latin-1, so use Unicode detour.
     """
-    if isinstance(p, unicode):
-        return p.title()
-    elif gUTF:
-        try:
-            return p.decode('utf-8').title().encode('utf-8')
-        except:
-            return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
-    else:
-        return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
+    return p.title()
+    # Under Python3 we can just assume unicode here
 
 def replace_word(input, one, two):
     ''' Regex replace on just words '''
@@ -789,7 +782,8 @@ def add_common_mapping(old_filename, guess, mapping):
     mapping.append(('%_cAt', category_name_three))
 
     # Video information
-    mapping.append(('%qf', guess.get('format', '')))
+    # Note that prior to guessit 3, %qf was returning 'format' which no longer seems to exist
+    mapping.append(('%qf', guess.get('source', '')))
     mapping.append(('%qss', guess.get('screen_size', '')))
     mapping.append(('%qvc', guess.get('video_codec', '')))
     mapping.append(('%qac', guess.get('audio_codec', '')))
@@ -848,7 +842,7 @@ def add_series_mapping(guess, mapping):
             episode_num_just = episodes[0].rjust(2, '0') + episode_separator + episodes[-1].rjust(2, '0')
         else:   # if multiple_episodes == 'list':
             for episode_num in episodes:
-                ep_prefix = episode_separator if episode_num_all <> '' else ''
+                ep_prefix = episode_separator if episode_num_all != '' else ''
                 episode_num_all += ep_prefix + episode_num
                 episode_num_just += ep_prefix + episode_num.rjust(2,'0')
 
@@ -1087,7 +1081,7 @@ def guess_info(filename):
     if verbose:
         print('Guessing: %s' % guessfilename)
 
-    guess = guessit.api.guessit(unicode(guessfilename), {'allowed_languages': [], 'allowed_countries': []})
+    guess = guessit.api.guessit(guessfilename, {'allowed_languages': [], 'allowed_countries': []})
 
     if verbose:
         print(guess)
@@ -1215,7 +1209,7 @@ def construct_path(filename):
     old_path = ''
     while old_path != path:
         old_path = path
-        for key, name in REPLACE_AFTER.iteritems():
+        for key, name in REPLACE_AFTER.items():
             path = path.replace(key, name)
 
     path = path.replace('%up', '..')

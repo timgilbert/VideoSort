@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Test for VideoSort post-processing script for NZBGet.
 #
@@ -92,7 +92,7 @@ def run_test(testobj):
 	shutil.rmtree(test_dir, True)
 	os.mkdir(test_dir)
 	dir_name, file_name = os.path.split(input_file)
-	if dir_name <> '':
+	if dir_name != '':
 		os.mkdir(test_dir + '/' + dir_name)
 	full_file_name = test_dir + '/' + input_file
 	out_file = open(full_file_name, 'w')
@@ -102,7 +102,8 @@ def run_test(testobj):
 	if verbose:
 		print('Executing...')
 	sys.stdout.flush()
-	proc = subprocess.Popen(['python', root_dir + '/VideoSort.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os.environ.copy())
+	proc = subprocess.Popen(['python', root_dir + '/VideoSort.py'], stdout=subprocess.PIPE,
+	                         stderr=subprocess.PIPE, env=os.environ.copy(), encoding='UTF-8')
 	out, err = proc.communicate()
 	out += err
 	ret = proc.returncode
@@ -118,7 +119,7 @@ def run_test(testobj):
 				if line.startswith(root_dir):
 					line = line[len(root_dir):]
 				dest = line.replace('\\', '/')
-		success = dest == output_file and output_file <> ''
+		success = dest == output_file and output_file != ''
 
 	if success:
 		print('%s: SUCCESS' % testobj['id'])
